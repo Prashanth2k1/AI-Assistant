@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AKIRA - Virtual Assistant</title>
+  <link rel="shortcut icon" href="img.png" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700&display=swap");
+    @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100;200;300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Roboto", sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .main {
+      min-height: 100vh;
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: url('https://img.freepik.com/free-photo/anthropomorphic-robot-that-performs-regular-human-job_23-2151061690.jpg?t=st=1722786429~exp=1722790029~hmac=b5e419e5cb491c1fa0341219ece1ed7e00a8c24daaca68f424f9de96df52d318&w=1060') center center / cover no-repeat;
+      /* Removed the background animation */
+    }
+
+    .main .image-container {
+      padding: 10px;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translatey(0px); }
+      50% { transform: translatey(-20px); }
+      100% { transform: translatey(0px); }
+    }
+
+    .main .image-container .image {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .main .image-container .image img {
+      width: 350px;
+      align-items: center;
+    }
+
+    .main .image-container h1 {
+      color: #000; 
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 40px;
+      letter-spacing: 5px;
+      font-family: "Urbanist", sans-serif;
+    }
+
+    .main .image-container p {
+      color: #324042;
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 18px;
+    }
+
+    .main .input {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 40vw;
+      height: 50px;
+      border-radius: 20px;
+      background: rgb(202 253 255 / 50%);
+      cursor: pointer;
+      position: relative;
+      /* Removed the pulse animation */
+    }
+
+    .main .input h1 {
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .main .input .loading-dots {
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+    }
+
+    .main .input .loading-dots div {
+      width: 8px;
+      height: 8px;
+      margin: 0 3px;
+      background: black;
+      border-radius: 50%;
+      animation: loading 1.5s infinite ease-in-out;
+    }
+
+    .main .input .loading-dots div:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    .main .input .loading-dots div:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes loading {
+      0%, 80%, 100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
+    }
+
+    .content {
+      font-family: "Roboto Mono", monospace;
+    }
+  </style>
+</head>
+
+<body>
+  <section class="main">
+    <div class="image-container">
+      <div class="image">
+       
+      </div>
+      <h1>A K I R A ֎</h1>
+      <p>I'm a Virtual Assistant, How may I help you? </p>
+    </div>
+    <div class="input">
+      <!-- <button class="talk"><i class="fas fa-microphone-alt"></i></button> -->
+      <h1 class="content">Start speaking<span class="loading-dots">
+        <div></div>
+        <div></div>
+        <div></div>
+      </span></h1> 
+    </div>
+  </section>
+  <script>
+    const btn = document.querySelector('.input');
+    const content = document.querySelector('.content');
+
+    function speak(text) {
+      const text_speak = new SpeechSynthesisUtterance(text);
+      text_speak.rate = 1;
+      text_speak.volume = 1;
+      text_speak.pitch = 1;
+      window.speechSynthesis.speak(text_speak);
+    }
+
+    function wishMe() {
+      var day = new Date();
+      var hour = day.getHours();
+      if (hour >= 0 && hour < 12) {
+        speak("Good Morning Boss... ");
+      } else if (hour >= 12 && hour < 17) {
+        speak("Good Afternoon Master... ");
+      } else {
+        speak("Good Evening Sir...");
+      }
+    }
+
+    window.addEventListener('load', () => {
+      wishMe();
+    });
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.onresult = (event) => {
+      const currentIndex = event.resultIndex;
+      const transcript = event.results[currentIndex][0].transcript;
+      content.textContent = transcript;
+      takeCommand(transcript.toLowerCase());
+    };
+
+    btn.addEventListener('click', () => {
+      content.textContent = "Listening 🎧";
+      recognition.start();
+    });
+
+    function takeCommand(message) {
+      if (message.includes('hey') || message.includes('hello') || message.includes('hi')) {
+        speak("Hello Sir, How May I Help You? ");
+      } else if (message.includes("open google")) {
+        window.open("https://google.com", "_blank");
+        speak("Opening Google... ");
+      } else if (message.includes("open youtube")) {
+        window.open("https://youtube.com", "_blank");
+        speak("Opening Youtube... ");
+      } else if (message.includes("open github")) {
+        window.open("https://github.com", "_blank");
+        speak("Opening Github... ");
+      } else if (message.includes("open linkedin")) {
+        window.open("https://linkedin.com", "_blank");
+        speak("Opening LinkedIn... ");
+      } else if (message.includes("open chatgpt")) {
+        window.open("https://chatgpt.com", "_blank");
+        speak("Opening ChatGPT... ");
+      } else if (message.includes("open facebook")) {
+        window.open("https://facebook.com", "_blank");
+        speak("Opening Facebook... ");
+      } else if (message.includes('what is') || message.includes('who is') || message.includes('what are')) {
+        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
+        const finalText = "This is what I found on the internet regarding " + message;
+        speak(finalText);
+      } else if (message.includes('wikipedia')) {
+        window.open(`https://en.wikipedia.org/wiki/${message.replace("wikipedia", "").trim()}`, "_blank");
+        const finalText = "This is what I found on Wikipedia regarding " + message;
+        speak(finalText);
+      } else if (message.includes('time')) {
+        const time = new Date().toLocaleString(undefined, { hour: "numeric", minute: "numeric" });
+        const finalText = "The current time is " + time;
+        speak(finalText);
+      } else if (message.includes('date')) {
+        const date = new Date().toLocaleString(undefined, { month: "short", day: "numeric" });
+        const finalText = "Today's date is " + date;
+        speak(finalText);
+      } else if (message.includes('calculator')) {
+        speak("Please open the calculator on your device. ");
+      } else if (message.includes('notepad')) {
+        speak("Please open Notepad on your device. ");
+      } else {
+        window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
+        const finalText = "I found some information for " + message + " on Google";
+        speak(finalText);
+      }
+    }
+  </script>
+</body>
+
+</html>
