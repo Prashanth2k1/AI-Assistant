@@ -235,6 +235,8 @@
         speak("Please open the calculator on your device. ");
       } else if (message.includes('notepad')) {
         speak("Please open Notepad on your device. ");
+      }else if (message.includes('bye')) {
+        speak("See you sir! Hasta la vista!!! ");
       } else {
         window.open(`https://www.google.com/search?q=${message.replace(" ", "+")}`, "_blank");
         const finalText = "I found some information for " + message + " on Google";
